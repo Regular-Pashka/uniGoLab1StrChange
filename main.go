@@ -10,7 +10,7 @@ import (
 
 
 type Deque struct {
-    items []int
+    items []rune
 }
 
 func (d *Deque) IsEmpty() bool {
@@ -21,15 +21,21 @@ func (d *Deque) IsEmpty() bool {
 	return flag
 }
 
-func (d *Deque) PushFront(item int) {
-    d.items = append([]int{item}, d.items...)
+func InitializeDeque() *Deque {
+	return &Deque{
+		items: make([]rune, 0),
+	}
 }
 
-func (d *Deque) PushBack(item int) {
+func (d *Deque) PushFront(item rune) {
+    d.items = append([]rune{item}, d.items...)
+}
+
+func (d *Deque) PushBack(item rune) {
     d.items = append(d.items, item)
 }
 
-func (d *Deque) PopFront() (int, bool) {
+func (d *Deque) PopFront() (rune, bool) {
     if len(d.items) == 0 {
         return 0, false
     }
@@ -38,7 +44,7 @@ func (d *Deque) PopFront() (int, bool) {
     return frontElement, true
 }
 
-func (d *Deque) PopBack() (int, bool) {
+func (d *Deque) PopBack() (rune, bool) {
     if len(d.items) == 0 {
         return 0, false
     }
@@ -59,7 +65,7 @@ func getPath() string {
 func main() {
 	// Открываем исходный файл для чтения
 	
-	inputFile, err := os.Open("input.txt")
+	inputFile, err := os.Open(getPath())
 	if err != nil {
 		fmt.Println("Ошибка открытия исходного файла:", err)
 		return
@@ -88,19 +94,19 @@ func main() {
 		}
 		line = strings.TrimSuffix(line, "\n")
 		// Переносим цифры в конец строки
-		var digits []rune
-		var nonDigits []rune
+		digits := InitializeDeque()
+		nonDigits := InitializeDeque()
 		for _, char := range line {
 			if unicode.IsDigit(char) {
-				digits = append(digits, char)
+				digits.PushBack(char)
 			} else {
-				nonDigits = append(nonDigits, char)
+				nonDigits.PushBack(char)
 			}
 		}
 
 		// Записываем строку в новый файл с цифрами в конце
 		
-		_, err = outputWriter.WriteString(string(nonDigits) + string(digits) + "\n")
+		_, err = outputWriter.WriteString(string(nonDigits.items) + string(digits.items) + "\n")
 		if err != nil {
 			fmt.Println("Ошибка записи в файл:", err)
 			return
@@ -118,14 +124,6 @@ func main() {
 }
 
 
-
-/* 
-	Проблемы выполнения:
-
-	1. inputReader.ReadString('\n')
-	2. При разделении строки цифры переносятся на новую строку - DONE
-	3. Дек нужно будет реализовать через дженерики, т.e. чтобы можно было менять тип данных 
-*/
 
 
 
